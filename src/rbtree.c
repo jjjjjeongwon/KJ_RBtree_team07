@@ -61,34 +61,35 @@ void right_rotate(rbtree *t, node_t *y){
 
 // 노드 삽입 후 균형 조정
 node_t *rbtree_insert_fixup(rbtree *t, node_t *z){
+  // red가 연속으로 나오지 않을 때 까지 실행.
   while(z->parent->color == RBTREE_RED){
-    if(z->parent == z->parent->parent->right){
-      node_t *y = z->parent->parent->left;
-      if(y->color == RBTREE_RED){
+    if(z->parent == z->parent->parent->right){ // 삽입 노드의 부모가 삽입 노드의 조상의 오른쪽 자식이면
+      node_t *y = z->parent->parent->left; // 삽입 노드의 조상의 왼쪽 자식으로 삼촌 노드 지정
+      if(y->color == RBTREE_RED){ // 부모의 색과 삼촌 노드의 색이 red면
         z->parent->color = RBTREE_BLACK;
         y->color = RBTREE_BLACK;
         z->parent->parent->color = RBTREE_RED;
         z = z->parent->parent;
-      }else{
-        if(z == z->parent->left){
+      }else{ // 삼촌 노드의 색이 black이고
+        if(z == z->parent->left){ // 삽입 노드의 부모의 왼쪽 자식이 삽입노드이면
           z = z->parent;
-          right_rotate(t, z);
+          right_rotate(t, z); // 부모 노드를 기준으로 오른쪽 회전
         }
         z->parent->color = RBTREE_BLACK;
         z->parent->parent->color = RBTREE_RED;
         left_rotate(t, z->parent->parent);
       }
-    }else{
-      node_t *y = z->parent->parent->right;
-      if(y->color == RBTREE_RED){
+    }else{ // 삽입 노드의 부모가 삽입 노드의 조상의 왼쪽 자식이면
+      node_t *y = z->parent->parent->right; // 삽입 노드의 조상의 오른쪽 자식을 삼촌 노드로 지정
+      if(y->color == RBTREE_RED){ // 부모의 색과 삼촌 노드의 색이 red이면
         z->parent->color = RBTREE_BLACK;
         y->color = RBTREE_BLACK;
         z->parent->parent->color = RBTREE_RED;
         z = z->parent->parent;
-      }else{
-        if(z == z->parent->right){
+      }else{ // 삼촌 노드의 색상이 black이고
+        if(z == z->parent->right){ // 삽입 노드의 부모의 오른쪽 자식이 삽입 노드이면
           z = z->parent;
-          left_rotate(t, z);
+          left_rotate(t, z); // 부모를 기준으로 왼쪽으로 회전
         }
         z->parent->color = RBTREE_BLACK;
         z->parent->parent->color = RBTREE_RED;
