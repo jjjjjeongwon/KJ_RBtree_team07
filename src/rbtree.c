@@ -1,4 +1,5 @@
 #include "rbtree.h"
+
 #include <stdlib.h>
 
 // 새로운 rbtree 생성
@@ -197,6 +198,7 @@ node_t *rbtree_max(const rbtree *t) {
   return max;
 }
 
+// 노드 삭제 후 균형 조정
 void rbtree_erase_fixup(rbtree *t, node_t *x){
   while(x != t->root && x->color == RBTREE_BLACK){
     if(x == x->parent->left){
@@ -252,15 +254,15 @@ void rbtree_erase_fixup(rbtree *t, node_t *x){
   x->color = RBTREE_BLACK;
 }
 
-void rb_transplant(rbtree *t, node_t *u, node_t *v){
-  if(u->parent == t->nil){
-    t->root = v;
-  }else if(u == u->parent->left){
-    u->parent->left = v;
+void rb_transplant(rbtree *t, node_t *a, node_t *b){
+  if(a->parent == t->nil){
+    t->root = b;
+  }else if(a == a->parent->left){
+    a->parent->left = b;
   }else{
-    u->parent->right = v;
+    a->parent->right = b;
   }
-  v->parent = u->parent;
+  b->parent = a->parent;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
@@ -304,18 +306,16 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
-void inordered_arr(node_t *root, node_t *nil, key_t *arr, int *index){
-  if(root == nil){
-    return;
-  }
-  inordered_arr(root->left, nil, arr, index);
-  arr[(*index)++] = root->key;
-  inordered_arr(root->right, nil, arr, index);
+int rb_inorder(node_t *root, key_t *res, const rbtree *t, int i){
+  if (root == t->nil) return i;
+
+  i = rb_inorder(root->left, res, t, i);
+  res[i] = root->key;
+  i = rb_inorder(root->right, res, t, i + 1);
 }
 
-int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-  int *index = calloc(1,sizeof(int));
-  inordered_arr(t->root, t->nil, arr, index);
-  free(index);
+// rbtree를 key값 순으로 변경하는 함수
+int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n){
+  rb_inorder(t->root, arr, t, 0);
   return 0;
 }
